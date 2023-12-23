@@ -1,6 +1,7 @@
 from typing import List
 import socket
 import datetime
+import wandb
 
 
 class WandbCSV:
