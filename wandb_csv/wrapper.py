@@ -18,6 +18,7 @@ class WandbCSV:
         self.config = config
         self.log_dir = log_dir
         self.metrics = {}
+
         for k in self.log_prefixes:
             self.metrics[k] = []
         self.backup = backup
