@@ -1,0 +1,37 @@
+name: Python formatting
+
+on: [push]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.WANDB_CSV }}
+
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install isort black mypy
+
+    - name: Run isort and black
+      run: |
+        isort . --recursive
+        black .
+
+    - name: Commit changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add -A
+        git commit -m "Apply isort and black formatting" || echo "No changes to commit"
+        git push
