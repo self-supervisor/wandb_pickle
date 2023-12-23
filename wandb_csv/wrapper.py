@@ -1,8 +1,9 @@
-from typing import List
-import socket
 import datetime
-import wandb
 import pickle
+import socket
+from typing import List
+
+import wandb
 
 
 class WandbCSV:
