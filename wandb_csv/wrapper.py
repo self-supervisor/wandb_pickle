@@ -1,3 +1,6 @@
+from typing import List
+
+
 class WandbCSV:
     def __init__(
         self,
