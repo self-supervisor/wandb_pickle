@@ -1,10 +1,10 @@
 import datetime
+import glob
 import pickle
 import socket
 from typing import List, Tuple
-import numpy as np
-import glob
 
+import numpy as np
 import wandb
 
 
