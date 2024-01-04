@@ -1,7 +1,9 @@
 import datetime
 import pickle
 import socket
-from typing import List
+from typing import List, Tuple
+import numpy as np
+import glob
 
 import wandb
 
@@ -50,7 +52,7 @@ class WandbCSV:
             metrics_with_prefix[new_key] = metrics_to_log[key]
         wandb.log(metrics_with_prefix)
 
-    def save(self):
+    def save(self) -> None:
         save_str = f"{self.log_dir}/wandb_logger_{self.run_ID}.pkl"
         save_str.replace(" ", "")
         with open(save_str, "wb") as f:
@@ -59,7 +61,7 @@ class WandbCSV:
         if self.backup:
             self.backup_files()
 
-    def backup_files(self):
+    def backup_files(self) -> None:
         raise NotImplementedError("Backups have not been implemented yet")
 
 
@@ -74,7 +76,7 @@ def load_file(file_path: str):
 
 def index_data(
     list_of_files: List[str], x_quantity: float
-) -> Dict[Tuple[float, int], List[float]]:
+) -> dict[Tuple[float, int], List[float]]:
     data_index = {}
     for a_file in list_of_files:
         data = load_file(a_file)
