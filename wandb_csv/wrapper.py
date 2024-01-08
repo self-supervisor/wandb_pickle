@@ -101,3 +101,16 @@ def extract_metric(
             for i in range(len(run.metrics[wandb_csv_prefix][metric_name]))
         ]
     )
+
+
+def calculate_statistics_on_list_of_lists(list_of_lists: List) -> Tuple[List, List]:
+    transposed_data = list(zip(*list_of_lists))
+
+    mean_list = []
+    stderr_list = []
+    for metric_values in transposed_data:
+        mean, stderr = calculate_statistics(metric_values)
+        mean_list.append(mean)
+        stderr_list.append(stderr)
+
+    return mean_list, stderr_list
