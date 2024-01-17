@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import glob
 import pickle
 import socket
@@ -25,7 +25,7 @@ class WandbCSV:
         for k in self.log_prefixes:
             self.metrics[k] = {}
         self.backup = backup
-        self.run_ID = socket.gethostname() + str(datetime.datetime.now())
+        self.run_ID = self.make_run_ID()
 
     def make_run_ID(self) -> str:
         now = datetime.now()
