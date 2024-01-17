@@ -1,7 +1,7 @@
-from datetime import datetime
 import glob
 import pickle
 import socket
+from datetime import datetime
 from typing import List, Tuple
 
 import numpy as np
