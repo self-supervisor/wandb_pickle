@@ -6,6 +6,11 @@ from typing import List, Tuple
 
 import numpy as np
 import wandb
+import matplotlib.pyplot as plt
+import os
+
+plt.style.use("tableau-colorblind10")
+color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
 
 
 class WandbCSV:
@@ -49,6 +54,12 @@ class WandbCSV:
         Returns:
             str: The generated run ID.
         """
+        now = datetime.now()
+        timestamp = now.strftime("_%Y-%m-%d_%H:%M:%S")
+        hostname = socket.gethostname()
+        ID = hostname + timestamp
+        ID.replace(" ", "_")
+        return ID
 
     def log(self, log_prefix: str, metrics_to_log: dict) -> None:
         """
@@ -95,6 +106,7 @@ class WandbCSV:
         """
         save_str = f"{self.log_dir}/wandb_logger_{self.run_ID}.pkl"
         save_str.replace(" ", "")
+        os.makedirs(self.log_dir, exist_ok=True)
         with open(save_str, "wb") as f:
             pickle.dump(self, f)
 
@@ -226,3 +238,79 @@ def filter_csvs(csv: List[WandbCSV], filter_key, filter_value) -> List[WandbCSV]
         List[WandbCSV]: Filtered list of WandbCSV objects.
     """
     return [c for c in csv if c.config[filter_key] == filter_value]
+
+
+def line_plot_a_metric(
+    csv: WandbCSV, wandb_prefix: str, x_metric_to_plot: str, y_metric_to_plot: str
+) -> None:
+    """
+    Plot a metric from a WandbCSV object.
+
+    Args:
+        csv (WandbCSV): WandbCSV object.
+        metric_to_plot (str): Metric to plot.
+
+    Returns:
+        None
+    """
+    plt.plot(
+        csv.metrics[wandb_prefix][x_metric_to_plot],
+        csv.metrics[wandb_prefix][y_metric_to_plot],
+        color=color_cycle[0],
+    )
+    plt.xlabel(x_metric_to_plot)
+    plt.ylabel(y_metric_to_plot)
+    plt.grid(True)
+    plt.title(csv.run_ID)
+    plt.savefig(f"{csv.run_ID}.png")
+    plt.close()
+
+
+def line_plot_mean_and_stderr(
+    csv_list: List[WandbCSV],
+    wandb_prefix: str,
+    x_metric_to_plot: str,
+    y_metric_to_plot: str,
+) -> None:
+    """
+    Plot the mean and standard error of specified metrics from a list of WandbCSV objects.
+
+    This function extracts the specified metrics from each WandbCSV object in the list, calculates their mean and standard error,
+    and plots these statistics over time. The x-axis represents the x_metric_to_plot and the y-axis represents the y_metric_to_plot.
+
+    Args:
+        csv_list (List[WandbCSV]): List of WandbCSV objects.
+        wandb_prefix (str): The prefix for the metrics.
+        x_metric_to_plot (str): The name of the metric to plot on the x-axis.
+        y_metric_to_plot (str): The name of the metric to plot on the y-axis.
+
+    Returns:
+        None
+    """
+    x_metric_to_plot_list = [
+        c.metrics[wandb_prefix][x_metric_to_plot] for c in csv_list
+    ]
+    y_metric_to_plot_list = [
+        c.metrics[wandb_prefix][y_metric_to_plot] for c in csv_list
+    ]
+    mean, stderr = calculate_statistics_on_list_of_lists(y_metric_to_plot_list)
+
+    assert len(set([len(x) for x in x_metric_to_plot_list])) == 1
+    assert len(set([len(y) for y in y_metric_to_plot_list])) == 1
+    assert len(x_metric_to_plot_list[0]) == len(y_metric_to_plot_list[0])
+    assert len(x_metric_to_plot_list[0]) == len(mean)
+
+    plt.plot(x_metric_to_plot_list[0], mean, color=color_cycle[0])
+    plt.fill_between(
+        x_metric_to_plot_list[0],
+        np.array(mean) - np.array(stderr),
+        np.array(mean) + np.array(stderr),
+        alpha=0.2,
+        color=color_cycle[0],
+    )
+    plt.xlabel(x_metric_to_plot)
+    plt.ylabel(y_metric_to_plot)
+    plt.grid(True)
+    plt.title(f"{csv_list[0].run_ID}")
+    plt.savefig(f"{csv_list[0].run_ID}_stderr.png")
+    plt.close()
