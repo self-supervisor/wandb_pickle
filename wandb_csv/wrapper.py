@@ -1,13 +1,13 @@
 import glob
+import os
 import pickle
 import socket
 from datetime import datetime
 from typing import List, Tuple
 
+import matplotlib.pyplot as plt
 import numpy as np
 import wandb
-import matplotlib.pyplot as plt
-import os
 
 plt.style.use("tableau-colorblind10")
 color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]

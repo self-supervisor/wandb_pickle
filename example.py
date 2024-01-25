@@ -1,11 +1,12 @@
 # %%
 import wandb
+
 from wandb_csv.wrapper import (
     WandbCSV,
+    get_files,
     line_plot_a_metric,
     line_plot_mean_and_stderr,
     load_file,
-    get_files,
 )
 
 wandb.init(mode="dryrun")
