@@ -1,11 +1,12 @@
-import pytest
 import numpy as np
+import pytest
+import wandb
+
 from wandb_csv.wrapper import (
     WandbCSV,
     calculate_statistics,
     calculate_statistics_on_list_of_lists,
 )
-import wandb
 
 wandb.init(mode="dryrun")
 
