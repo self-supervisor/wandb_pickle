@@ -6,6 +6,7 @@ from wandb_csv.wrapper import (
     calculate_statistics_on_list_of_lists,
 )
 import wandb
+import pickle
 
 wandb.init(mode="dryrun")
 
@@ -22,16 +23,26 @@ def test_make_run_ID(wandb_csv_instance):
     assert isinstance(run_ID, str)
 
 
+def test_save(wandb_csv_instance, tmpdir):
+    wandb_csv_instance.log_dir = tmpdir.strpath
+    wandb_csv_instance.save()
+    assert tmpdir.join(f"wandb_logger_{wandb_csv_instance.run_ID}.pkl").isfile()
+
+
 def test_log(wandb_csv_instance):
     wandb_csv_instance.log("training", {"loss": 0.5})
     assert "loss" in wandb_csv_instance.metrics["training"]
     assert wandb_csv_instance.metrics["training"]["loss"] == [0.5]
 
 
-def test_save(wandb_csv_instance, tmpdir):
+def test_log_and_save(wandb_csv_instance, tmpdir):
+    wandb_csv_instance.log("training", {"loss": 0.5})
     wandb_csv_instance.log_dir = tmpdir.strpath
     wandb_csv_instance.save()
-    assert tmpdir.join(f"wandb_logger_{wandb_csv_instance.run_ID}.pkl").isfile()
+    with open(tmpdir.join(f"wandb_logger_{wandb_csv_instance.run_ID}.pkl"), "rb") as f:
+        loaded_instance = pickle.load(f)
+    assert "loss" in loaded_instance.metrics["training"]
+    assert loaded_instance.metrics["training"]["loss"] == [0.5]
 
 
 def test_calculate_statistics():
