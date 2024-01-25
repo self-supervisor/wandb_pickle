@@ -1,3 +1,5 @@
+import pickle
+
 import numpy as np
 import pytest
 import wandb
@@ -7,8 +9,6 @@ from wandb_csv.wrapper import (
     calculate_statistics,
     calculate_statistics_on_list_of_lists,
 )
-import wandb
-import pickle
 
 wandb.init(mode="dryrun")
 
