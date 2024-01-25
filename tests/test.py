@@ -28,6 +28,12 @@ def test_log(wandb_csv_instance):
     assert wandb_csv_instance.metrics["training"]["loss"] == [0.5]
 
 
+def test_save(wandb_csv_instance, tmpdir):
+    wandb_csv_instance.log_dir = tmpdir.strpath
+    wandb_csv_instance.save()
+    assert tmpdir.join(f"wandb_logger_{wandb_csv_instance.run_ID}.pkl").isfile()
+
+
 def test_calculate_statistics():
     reward_list = [1.0, 2.0, 3.0, 4.0, 5.0]
     mean_reward, std_error = calculate_statistics(reward_list)
