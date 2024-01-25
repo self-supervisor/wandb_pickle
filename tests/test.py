@@ -1,5 +1,7 @@
-import pytest
 import numpy as np
+import pytest
+import wandb
+
 from wandb_csv.wrapper import (
     WandbCSV,
     calculate_statistics,
