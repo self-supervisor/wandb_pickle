@@ -1,6 +1,7 @@
 # %%
 import numpy as np
 import wandb
+import numpy as np
 
 from wandb_csv.wrapper import (
     WandbPickle,
