@@ -13,26 +13,26 @@ plt.style.use("tableau-colorblind10")
 color_cycle = plt.rcParams["axes.prop_cycle"].by_key()["color"]
 
 
-class WandbCSV:
+class WandbPickle:
     """A class for logging and saving wandb runs, but with easy customisable local plotting."""
 
     def __init__(
         self,
         config: dict,
-        log_dir: str = "wandb_csv",
+        log_dir: str = "wandb_pickle",
         log_prefixes: List[str] = ["training", "evaluating"],
         backup: bool = False,
     ):
         """
-        Initialize the WandbCSV object.
+        Initialize the WandbPickle object.
 
         Args:
             config (dict): Configuration dictionary.
-            log_dir (str, optional): Directory for logging. Defaults to "wandb_csv".
+            log_dir (str, optional): Directory for logging. Defaults to "wandb_pickle".
             log_prefixes (List[str], optional): List of prefixes for logging. Defaults to ["training", "evaluating"].
             backup (bool, optional): Whether to backup files. Defaults to False.
         """
-        assert type(config) == dict
+        assert type(config) is dict
         self.log_prefixes = log_prefixes
         self.config = config
         self.log_dir = log_dir
@@ -96,7 +96,7 @@ class WandbCSV:
 
     def save(self) -> None:
         """
-        Save the current WandbCSV object to a pickle file.
+        Save the current WandbPickle object to a pickle file.
 
         The object is saved to a file named "wandb_logger_{run_ID}.pkl" in the directory specified by `self.log_dir`.
         Spaces in the filename are removed. If `self.backup` is True, the `backup_files` method is also called.
@@ -182,28 +182,30 @@ def calculate_statistics(reward_list: List[float]) -> Tuple[float, float]:
 
 
 def extract_metric(
-    wandb_csv_prefix: str, metric_name: str, run: WandbCSV
+    wandb_pickle_prefix: str, metric_name: str, run: WandbPickle
 ) -> np.ndarray:
     """
-    Extract a metric from a WandbCSV object.
+    Extract a metric from a WandbPickle object.
 
     Args:
-        wandb_csv_prefix (str): Prefix for the metric.
+        wandb_pickle_prefix (str): Prefix for the metric.
         metric_name (str): Name of the metric.
-        run (WandbCSV): WandbCSV object.
+        run (WandbPickle): WandbPickle object.
 
     Returns:
         np.ndarray: Array of metric values.
     """
     return np.array(
         [
-            run.metrics[wandb_csv_prefix][metric_name][i]
-            for i in range(len(run.metrics[wandb_csv_prefix][metric_name]))
+            run.metrics[wandb_pickle_prefix][metric_name][i]
+            for i in range(len(run.metrics[wandb_pickle_prefix][metric_name]))
         ]
     )
 
 
-def calculate_statistics_on_list_of_lists(list_of_lists: List) -> Tuple[List, List]:
+def calculate_statistics_on_list_of_lists(
+    list_of_lists: List,
+) -> Tuple[List, List]:
     """
     Calculate statistics on a list of lists. Currently only supports mean and standard error.
 
@@ -225,61 +227,66 @@ def calculate_statistics_on_list_of_lists(list_of_lists: List) -> Tuple[List, Li
     return mean_list, stderr_list
 
 
-def filter_csvs(csv: List[WandbCSV], filter_key, filter_value) -> List[WandbCSV]:
+def filter_pickles(
+    pickle: List[WandbPickle], filter_key, filter_value
+) -> List[WandbPickle]:
     """
-    Filter a list of WandbCSV objects based on a key-value pair.
+    Filter a list of WandbPickle objects based on a key-value pair.
 
     Args:
-        csv (List[WandbCSV]): List of WandbCSV objects.
+        pickle (List[WandbPickle]): List of WandbPickle objects.
         filter_key: Key for filtering.
         filter_value: Value for filtering.
 
     Returns:
-        List[WandbCSV]: Filtered list of WandbCSV objects.
+        List[WandbPickle]: Filtered list of WandbPickle objects.
     """
-    return [c for c in csv if c.config[filter_key] == filter_value]
+    return [c for c in pickle if c.config[filter_key] == filter_value]
 
 
 def line_plot_a_metric(
-    csv: WandbCSV, wandb_prefix: str, x_metric_to_plot: str, y_metric_to_plot: str
+    pickle: WandbPickle,
+    wandb_prefix: str,
+    x_metric_to_plot: str,
+    y_metric_to_plot: str,
 ) -> None:
     """
-    Plot a metric from a WandbCSV object.
+    Plot a metric from a WandbPickle object.
 
     Args:
-        csv (WandbCSV): WandbCSV object.
+        pickle (WandbPickle): WandbPickle object.
         metric_to_plot (str): Metric to plot.
 
     Returns:
         None
     """
     plt.plot(
-        csv.metrics[wandb_prefix][x_metric_to_plot],
-        csv.metrics[wandb_prefix][y_metric_to_plot],
+        pickle.metrics[wandb_prefix][x_metric_to_plot],
+        pickle.metrics[wandb_prefix][y_metric_to_plot],
         color=color_cycle[0],
     )
     plt.xlabel(x_metric_to_plot)
     plt.ylabel(y_metric_to_plot)
     plt.grid(True)
-    plt.title(csv.run_ID)
-    plt.savefig(f"{csv.run_ID}.png")
+    plt.title(pickle.run_ID)
+    plt.savefig(f"{pickle.run_ID}.png")
     plt.close()
 
 
 def line_plot_mean_and_stderr(
-    csv_list: List[WandbCSV],
+    pickle_list: List[WandbPickle],
     wandb_prefix: str,
     x_metric_to_plot: str,
     y_metric_to_plot: str,
 ) -> None:
     """
-    Plot the mean and standard error of specified metrics from a list of WandbCSV objects.
+    Plot the mean and standard error of specified metrics from a list of WandbPickle objects.
 
-    This function extracts the specified metrics from each WandbCSV object in the list, calculates their mean and standard error,
+    This function extracts the specified metrics from each WandbPickle object in the list, calculates their mean and standard error,
     and plots these statistics over time. The x-axis represents the x_metric_to_plot and the y-axis represents the y_metric_to_plot.
 
     Args:
-        csv_list (List[WandbCSV]): List of WandbCSV objects.
+        pickle_list (List[WandbPickle]): List of WandbPickle objects.
         wandb_prefix (str): The prefix for the metrics.
         x_metric_to_plot (str): The name of the metric to plot on the x-axis.
         y_metric_to_plot (str): The name of the metric to plot on the y-axis.
@@ -288,12 +295,14 @@ def line_plot_mean_and_stderr(
         None
     """
     x_metric_to_plot_list = [
-        c.metrics[wandb_prefix][x_metric_to_plot] for c in csv_list
+        c.metrics[wandb_prefix][x_metric_to_plot] for c in pickle_list
     ]
     y_metric_to_plot_list = [
-        c.metrics[wandb_prefix][y_metric_to_plot] for c in csv_list
+        c.metrics[wandb_prefix][y_metric_to_plot] for c in pickle_list
     ]
-    mean, stderr = calculate_statistics_on_list_of_lists(y_metric_to_plot_list)
+    mean, stderr = calculate_statistics_on_list_of_lists(
+        y_metric_to_plot_list
+    )
 
     assert len(set([len(x) for x in x_metric_to_plot_list])) == 1
     assert len(set([len(y) for y in y_metric_to_plot_list])) == 1
@@ -311,6 +320,6 @@ def line_plot_mean_and_stderr(
     plt.xlabel(x_metric_to_plot)
     plt.ylabel(y_metric_to_plot)
     plt.grid(True)
-    plt.title(f"{csv_list[0].run_ID}")
-    plt.savefig(f"{csv_list[0].run_ID}_stderr.png")
+    plt.title(f"{pickle_list[0].run_ID}")
+    plt.savefig(f"{pickle_list[0].run_ID}_stderr.png")
     plt.close()

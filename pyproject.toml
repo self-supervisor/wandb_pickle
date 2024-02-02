@@ -1,0 +1,2 @@
+[tool.black]
+line-length = 78 # Or whatever line length you prefer

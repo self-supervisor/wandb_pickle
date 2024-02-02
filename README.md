@@ -7,24 +7,24 @@ Wandb is great for visualisations and debugging of performance in machine learni
 
 ```python
 import wandb
-from wandb_csv.wrapper import WandbCSV, line_plot_a_metric, line_plot_mean_and_stderr, load_file, get_files
+from wandb_pickle.wrapper import WandbPickle, line_plot_a_metric, line_plot_mean_and_stderr, load_file, get_files
 
 # Initialize wandb
 wandb.init(mode="dryrun")
 
-# Logging with WandbCSV
-wandb_csv1 = WandbCSV(config={"learning_rate": 0.01, "seed": 1}, log_dir="example_logs")
+# Logging with WandbPickle
+wandb_pickle1 = WandbPickle(config={"learning_rate": 0.01, "seed": 1}, log_dir="example_logs")
 for i in range(100):
-    wandb_csv1.log("training", {"loss": 0.01 * i, "accuracy": 1 - 0.01 * i})
-wandb_csv1.save()
+    wandb_pickle1.log("training", {"loss": 0.01 * i, "accuracy": 1 - 0.01 * i})
+wandb_pickle1.save()
 wandb.finish()
 ```
 This will save a pickle file locally of your logged metrics. Then you can load the metrics you want to plot and plot them very easily.
 
 ```python
 # Load data and plot a single metric
-wandb_csv1 = load_file(get_files("example_logs/*.pkl")[0])
-line_plot_a_metric(wandb_csv1, "training", "loss", "accuracy")
+wandb_pickle1 = load_file(get_files("example_logs/*.pkl")[0])
+line_plot_a_metric(wandb_pickle1, "training", "loss", "accuracy")
 ```
 
 Where line_plot_a_metric is a very simple function here.
@@ -34,17 +34,17 @@ If you want to plot the mean and stderr of a bunch of runs (as you often want to
 ```python
 # Logging different additional runs
 wandb.init(mode="dryrun")
-wandb_csv2 = WandbCSV(config={"learning_rate": 0.01, "seed": 2}, log_dir="example_logs")
+wandb_pickle2 = WandbPickle(config={"learning_rate": 0.01, "seed": 2}, log_dir="example_logs")
 for i in range(100):
-    wandb_csv2.log("training", {"loss": 0.01 * i, "accuracy": 0.9 - 0.01 * i})
-wandb_csv2.save()
+    wandb_pickle2.log("training", {"loss": 0.01 * i, "accuracy": 0.9 - 0.01 * i})
+wandb_pickle2.save()
 wandb.finish()
 
 wandb.init(mode="dryrun")
-wandb_csv3 = WandbCSV(config={"learning_rate": 0.01, "seed": 3}, log_dir="example_logs")
+wandb_pickle3 = WandbPickle(config={"learning_rate": 0.01, "seed": 3}, log_dir="example_logs")
 for i in range(100):
-    wandb_csv3.log("training", {"loss": 0.1 * i, "accuracy": 0.8 - 0.01 * i})
-wandb_csv3.save()
+    wandb_pickle3.log("training", {"loss": 0.1 * i, "accuracy": 0.8 - 0.01 * i})
+wandb_pickle3.save()
 wandb.finish()
 
 # Load all data and plot mean and standard error
