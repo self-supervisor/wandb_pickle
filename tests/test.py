@@ -25,11 +25,11 @@ def test_make_run_ID(wandb_pickle_instance):
     assert isinstance(run_ID, str)
 
 
-def test_save(wandb_pickle_instance, tmpdir):
-    wandb_pickle_instance.log_dir = tmpdir.strpath
-    wandb_pickle_instance.save()
+def test_save(wandb_csv_instance, tmpdir):
+    wandb_csv_instance.log_dir = tmpdir.strpath
+    wandb_csv_instance.save()
     assert tmpdir.join(
-        f"wandb_logger_{wandb_pickle_instance.run_ID}.pkl"
+        f"wandb_logger_{wandb_csv_instance.run_ID}.pkl"
     ).isfile()
 
 
@@ -39,12 +39,12 @@ def test_log(wandb_pickle_instance):
     assert wandb_pickle_instance.metrics["training"]["loss"] == [0.5]
 
 
-def test_log_and_save(wandb_pickle_instance, tmpdir):
-    wandb_pickle_instance.log("training", {"loss": 0.5})
-    wandb_pickle_instance.log_dir = tmpdir.strpath
-    wandb_pickle_instance.save()
+def test_log_and_save(wandb_csv_instance, tmpdir):
+    wandb_csv_instance.log("training", {"loss": 0.5})
+    wandb_csv_instance.log_dir = tmpdir.strpath
+    wandb_csv_instance.save()
     with open(
-        tmpdir.join(f"wandb_logger_{wandb_pickle_instance.run_ID}.pkl"), "rb"
+        tmpdir.join(f"wandb_logger_{wandb_csv_instance.run_ID}.pkl"), "rb"
     ) as f:
         loaded_instance = pickle.load(f)
     assert "loss" in loaded_instance.metrics["training"]

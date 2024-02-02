@@ -2,6 +2,7 @@
 import numpy as np
 import wandb
 import numpy as np
+import wandb
 
 from wandb_csv.wrapper import (
     WandbPickle,
