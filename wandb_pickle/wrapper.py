@@ -3,7 +3,7 @@ import os
 import pickle
 import socket
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,7 +18,7 @@ class WandbPickle:
 
     def __init__(
         self,
-        config: dict,
+        config: Dict,
         log_dir: str = "wandb_pickle",
         log_prefixes: List[str] = ["training", "evaluating"],
         backup: bool = False,
@@ -27,7 +27,7 @@ class WandbPickle:
         Initialize the WandbPickle object.
 
         Args:
-            config (dict): Configuration dictionary.
+            config (Dict): Configuration Dictionary.
             log_dir (str, optional): Directory for logging. Defaults to "wandb_pickle".
             log_prefixes (List[str], optional): List of prefixes for logging. Defaults to ["training", "evaluating"].
             backup (bool, optional): Whether to backup files. Defaults to False.
@@ -61,16 +61,16 @@ class WandbPickle:
         ID.replace(" ", "_")
         return ID
 
-    def log(self, log_prefix: str, metrics_to_log: dict) -> None:
+    def log(self, log_prefix: str, metrics_to_log: Dict) -> None:
         """
         Log metrics with a specified prefix.
 
-        This function logs the provided metrics under the specified prefix. The metrics are stored in the `self.metrics` dictionary
+        This function logs the provided metrics under the specified prefix. The metrics are stored in the `self.metrics` Dictionary
         and also logged to Weights & Biases using the `wandb.log` function.
 
         Args:
             log_prefix (str): The prefix for the metrics. Must be in `self.log_prefixes`.
-            metrics_to_log (dict): The metrics to log. The keys are the metric names and the values are the metric values.
+            metrics_to_log (Dict): The metrics to log. The keys are the metric names and the values are the metric values.
 
         Raises:
             AssertionError: If `log_prefix` is not in `self.log_prefixes`.
@@ -146,7 +146,7 @@ def load_file(file_path: str):
 
 def index_data(
     list_of_files: List[str], x_quantity: float
-) -> dict[Tuple[float, int], List[float]]:
+) -> Dict[Tuple[float, int], List[float]]:
     """
     Index data from a list of files.
 
@@ -155,7 +155,7 @@ def index_data(
         x_quantity (float): Quantity for indexing.
 
     Returns:
-        dict[Tuple[float, int], List[float]]: Indexed data.
+        Dict[Tuple[float, int], List[float]]: Indexed data.
     """
     data_index = {}
     for a_file in list_of_files:
