@@ -3,7 +3,7 @@ import os
 import pickle
 import socket
 from datetime import datetime
-from typing import List, Tuple, Dict
+from typing import Dict, List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
